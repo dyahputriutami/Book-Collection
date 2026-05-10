@@ -1,6 +1,6 @@
 export default function RootLayout({ children }) {
   return (
-    <html lang="id">
+    <html>
       <body>{children}</body>
     </html>
   )
