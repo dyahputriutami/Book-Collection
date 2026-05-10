@@ -1,8 +1,3 @@
-Tentu, ini adalah script lengkap untuk file app/page.js yang sudah menyertakan fitur Pencarian Real-time dan tetap menggunakan nama tabel Perpustakaan Putri sesuai dengan database Anda.
-
-Silakan salin seluruh kode di bawah ini dan timpa (replace) semua isi file di GitHub Anda:
-
-JavaScript
 'use client';
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
@@ -98,7 +93,7 @@ export default function BookTracker() {
 
   return (
     <div style={{ padding: '40px 20px', fontFamily: 'sans-serif', maxWidth: '850px', margin: '0 auto', backgroundColor: '#f4f7f6', minHeight: '100vh' }}>
-      <h1 style={{ textAlign: 'center', color: '#2c3e50', marginBottom: '30px' }}>🌍 My Global Library</h1>
+      <h1 style={{ textAlign: 'center', color: '#2c3e50', marginBottom: '30px' }}>Perpustakaan Putri</h1>
       
       {/* FORM INPUT BUKU */}
       <form onSubmit={addBook} style={{ backgroundColor: 'white', padding: '25px', borderRadius: '15px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', marginBottom: '40px' }}>
