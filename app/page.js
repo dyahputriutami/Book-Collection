@@ -139,11 +139,21 @@ export default function PerpustakaanPutriApp() {
 
           <input type="text" placeholder="🔍 Cari koleksi..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ width: '100%', padding: '16px 20px', borderRadius: '14px', border: '1px solid #f0e0e0', marginBottom: '40px', boxSizing: 'border-box' }} />
 
+          {/* GRID BUKU - DIPERBAIKI AGAR COVER UTUH */}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(auto-fill, minmax(200px, 1fr))', gap: isMobile ? '20px' : '35px' }}>
             {filteredBooks.map(book => (
               <div key={book.id} onClick={() => { setSelectedBook(book); setIsEditing(false); }} style={{ cursor: 'pointer', padding: '14px', borderRadius: '24px', backgroundColor: 'white', border: '1px solid #f0e0e0', display: 'flex', flexDirection: 'column', height: '100%', marginBottom: '10px' }}>
-                <div style={{ overflow: 'hidden', borderRadius: '16px', height: isMobile ? '200px' : '280px', marginBottom: '12px' }}>
-                  <img src={book.cover} onError={(e) => e.target.src = 'https://via.placeholder.com/200x300'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                {/* CONTAINER COVER: Menambahkan padding dan background agar rapi saat dicontain */}
+                <div style={{ overflow: 'hidden', borderRadius: '16px', height: isMobile ? '200px' : '280px', marginBottom: '12px', backgroundColor: '#f5f5f5', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '10px', boxSizing: 'border-box' }}>
+                  <img 
+                    src={book.cover} 
+                    onError={(e) => e.target.src = 'https://via.placeholder.com/200x300'} 
+                    style={{ 
+                      maxWidth: '100%', 
+                      maxHeight: '100%', 
+                      objectFit: 'contain' // PERBAIKAN: Seluruh gambar cover terlihat, tidak dipotong
+                    }} 
+                  />
                 </div>
                 <div style={{ minHeight: '42px' }}>
                   <h3 style={{ fontSize: isMobile ? '14px' : '16px', fontWeight: '700', color: '#4a0000', margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: '1.3' }}>{book.title}</h3>
@@ -156,12 +166,23 @@ export default function PerpustakaanPutriApp() {
         </div>
       </div>
 
+      {/* MODAL DETAIL */}
       {selectedBook && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(74, 0, 0, 0.3)', backdropFilter: 'blur(10px)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '15px', zIndex: 10000 }}>
           <div style={{ backgroundColor: 'white', padding: isMobile ? '25px' : '40px', borderRadius: '35px', maxWidth: '800px', width: '100%', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '20px' : '40px', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
             <button onClick={() => setSelectedBook(null)} style={{ position: 'absolute', top: '20px', right: '20px', border: 'none', background: '#f5f5f5', width: '35px', height: '35px', borderRadius: '50%', cursor: 'pointer' }}>✕</button>
             <div style={{ width: isMobile ? '100%' : '240px', textAlign: 'center' }}>
-              <img src={selectedBook.cover} style={{ width: isMobile ? '160px' : '100%', borderRadius: '20px', marginBottom: '20px' }} />
+              {/* MODAL COVER: Juga menggunakan contain */}
+              <img 
+                src={selectedBook.cover} 
+                style={{ 
+                  width: isMobile ? '160px' : '100%', 
+                  borderRadius: '20px', 
+                  marginBottom: '20px', 
+                  objectFit: 'contain', 
+                  maxHeight: '300px' 
+                }} 
+              />
               <button onClick={() => deleteBook(selectedBook.id)} style={{ width: '100%', padding: '12px', backgroundColor: '#fff0f0', color: '#e03131', borderRadius: '12px', border: 'none', fontWeight: 'bold' }}>🗑 Hapus Buku</button>
             </div>
             <div style={{ flex: 1 }}>
