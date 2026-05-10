@@ -36,17 +36,17 @@ export default function PerpustakaanPutriApp() {
   ];
 
   useEffect(() => {
-    // Pilih quote acak saat pertama kali load
+    // Pilih quote acak
     setRandomQuote(quotes[Math.floor(Math.random() * quotes.length)]);
     
-    // Ambil data dari Supabase
+    // Ambil data
     fetchBooks();
 
-    // Timer Greeting Page: Tampil 2.5 detik, lalu mulai memudar
+    // Timer Greeting: Tampil 4 detik (samar), lalu mulai memudar halus
     const timer = setTimeout(() => {
-      setFadeOut(true); // Mulai animasi memudar
-      setTimeout(() => setShowGreeting(false), 800); // Hapus elemen setelah benar-benar pudar
-    }, 3000);
+      setFadeOut(true); 
+      setTimeout(() => setShowGreeting(false), 1000); // Hapus elemen setelah pudar sempurna
+    }, 4000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -58,74 +58,39 @@ export default function PerpustakaanPutriApp() {
     try {
       const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(title)}&maxResults=1`);
       const data = await res.json();
-      
       if (data.items && data.items.length > 0) {
         const info = data.items[0].volumeInfo;
         setAuthor(info.authors ? info.authors.join(', ') : 'Penulis Tidak Diketahui');
-        
-        let image = "";
-        if (info.imageLinks) {
-          image = info.imageLinks.thumbnail || info.imageLinks.smallThumbnail || "";
-        }
+        let image = info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail || "";
         if (image) image = image.replace('http:', 'https:');
         setCoverUrl(image);
-        
-        alert("Data ditemukan! Penulis dan Foto Cover telah terisi.");
-      } else {
-        alert("Buku tidak ditemukan.");
       }
-    } catch (err) {
-      console.error("API Error:", err);
-    } finally {
-      setSearchingAPI(false);
-    }
+    } catch (err) { console.error(err); } 
+    finally { setSearchingAPI(false); }
   };
 
   // --- FUNGSI SUPABASE (TABEL: Perpustakaan Putri) ---
   async function fetchBooks() {
     try {
-      const { data, error } = await supabase
-        .from('Perpustakaan Putri')
-        .select('*')
-        .order('id', { ascending: false });
+      const { data, error } = await supabase.from('Perpustakaan Putri').select('*').order('id', { ascending: false });
       if (error) throw error;
       setBooks(data || []);
-    } catch (err) { 
-      console.error("Fetch error:", err.message); 
-    } finally { 
-      setLoading(false); 
-    }
+    } catch (err) { console.error(err.message); } 
+    finally { setLoading(false); }
   }
 
   const addBook = async (e) => {
     e.preventDefault();
-    if (!title || !author) return alert("Judul dan Penulis wajib diisi");
-
-    const { error } = await supabase
-      .from('Perpustakaan Putri')
-      .insert([{ 
-        title, 
-        author, 
-        cover: coverUrl || 'https://via.placeholder.com/200x300', 
-        status: 'Belum Dibaca', 
-        rating: 0,
-        notes: ''
-      }]);
-
-    if (error) {
-      alert("Gagal simpan: " + error.message);
-    } else {
-      alert("Berhasil disimpan!");
-      setTitle(''); setAuthor(''); setCoverUrl('');
-      fetchBooks();
-    }
+    if (!title || !author) return alert("Isi judul dan penulis");
+    const { error } = await supabase.from('Perpustakaan Putri').insert([{ 
+      title, author, cover: coverUrl || 'https://via.placeholder.com/200x300', 
+      status: 'Belum Dibaca', rating: 0, notes: ''
+    }]);
+    if (!error) { setTitle(''); setAuthor(''); setCoverUrl(''); fetchBooks(); }
   };
 
   const updateBook = async (id, updates) => {
-    const { error } = await supabase
-      .from('Perpustakaan Putri')
-      .update(updates)
-      .eq('id', id);
+    const { error } = await supabase.from('Perpustakaan Putri').update(updates).eq('id', id);
     if (!error) {
       setBooks(books.map(b => b.id === id ? { ...b, ...updates } : b));
       if (selectedBook && selectedBook.id === id) setSelectedBook({ ...selectedBook, ...updates });
@@ -134,11 +99,8 @@ export default function PerpustakaanPutriApp() {
   };
 
   const deleteBook = async (id) => {
-    if (confirm('Hapus buku ini dari Perpustakaan Putri?')) {
-      const { error } = await supabase
-        .from('Perpustakaan Putri')
-        .delete()
-        .eq('id', id);
+    if (confirm('Hapus buku ini?')) {
+      const { error } = await supabase.from('Perpustakaan Putri').delete().eq('id', id);
       if (!error) { setSelectedBook(null); fetchBooks(); }
     }
   };
@@ -156,29 +118,28 @@ export default function PerpustakaanPutriApp() {
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#fffafa', fontFamily: 'sans-serif', position: 'relative' }}>
       
-      {/* 1. GREETING PAGE OVERLAY */}
+      {/* 1. GREETING PAGE OVERLAY (EFEK ASAP SMOOTH) */}
       {showGreeting && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: '#4a0000', color: 'white', zIndex: 9999,
+          backgroundColor: 'rgba(74, 0, 0, 0.5)', // Maroon samar (Smoke Effect)
+          backdropFilter: 'blur(10px)', // Efek blur pada konten di belakangnya
+          color: 'white', zIndex: 9999,
           display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
           textAlign: 'center', padding: '40px',
           opacity: fadeOut ? 0 : 1,
-          transition: 'opacity 0.8s ease-in-out'
+          transition: 'opacity 1s ease-in-out' // Transisi pudar sempurna
         }}>
-          <h1 style={{ fontSize: '2.5rem', marginBottom: '20px', fontWeight: '800' }}>Selamat Datang di Perpustakaan Putri</h1>
-          <p style={{ fontSize: '1.2rem', fontStyle: 'italic', maxWidth: '600px', opacity: 0.9 }}>
+          <h1 style={{ fontSize: '2.5rem', marginBottom: '20px', fontWeight: '800', letterSpacing: '-1px' }}>Selamat Datang di Perpustakaan Putri</h1>
+          <p style={{ fontSize: '1.2rem', fontStyle: 'italic', maxWidth: '600px', opacity: 0.9, lineHeight: '1.6' }}>
             {randomQuote}
           </p>
+          <div style={{ marginTop: '50px', width: '60px', height: '2px', backgroundColor: 'rgba(255,255,255,0.2)' }}></div>
         </div>
       )}
 
-      {/* 2. MAIN CONTENT (LANDING PAGE) */}
-      <div style={{ 
-        opacity: showGreeting ? 0 : 1, 
-        transition: 'opacity 1s ease-in',
-        visibility: showGreeting && !fadeOut ? 'hidden' : 'visible'
-      }}>
+      {/* 2. MAIN CONTENT (LANDING PAGE - Terlihat Samar Saat Greeting) */}
+      <div style={{ paddingBottom: '50px' }}>
         
         {/* Header */}
         <div style={{ padding: '60px 20px 30px', textAlign: 'center' }}>
