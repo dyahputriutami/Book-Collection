@@ -24,7 +24,7 @@ export default function PerpustakaanPutriApp() {
   const [author, setAuthor] = useState('');
   const [coverUrl, setCoverUrl] = useState('');
 
-  // --- 2. DATA QUOTES (WITH AUTHORS) ---
+  // --- 2. DATA QUOTES ---
   const quotes = [
     { text: "“Buku adalah sihir portabel yang unik.”", author: "Stephen King" },
     { text: "“Satu anak, satu guru, satu buku dan satu pena dapat mengubah dunia.”", author: "Malala Yousafzai" },
@@ -116,7 +116,6 @@ export default function PerpustakaanPutriApp() {
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#fffafa', fontFamily: 'sans-serif' }}>
       
-      {/* SPLASH SCREEN */}
       {showGreeting && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(74, 0, 0, 0.5)', backdropFilter: 'blur(10px)', color: 'white', zIndex: 9999, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '40px', opacity: fadeOut ? 0 : 1, transition: 'opacity 1s ease-in-out' }}>
           <h1 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem' }}>Selamat Datang di Perpustakaan Putri</h1>
@@ -126,7 +125,6 @@ export default function PerpustakaanPutriApp() {
       )}
 
       <div style={{ paddingBottom: '80px' }}>
-        {/* HEADER */}
         <div style={{ padding: isMobile ? '40px 15px' : '60px 20px 30px', textAlign: 'center' }}>
           <h1 style={{ fontSize: isMobile ? '32px' : '45px', fontWeight: '800', color: '#4a0000', margin: 0 }}>Perpustakaan Putri</h1>
           <div style={{ minHeight: '60px', marginTop: '15px' }}>
@@ -137,7 +135,6 @@ export default function PerpustakaanPutriApp() {
 
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: isMobile ? '0 15px' : '0 20px' }}>
           
-          {/* INPUT FORM SECTION */}
           <div style={{ backgroundColor: 'white', padding: isMobile ? '20px' : '30px', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.05)', marginBottom: '35px', border: '1px solid #f0e0e0' }}>
             <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '12px', marginBottom: '12px' }}>
               <input placeholder="Judul Buku..." value={title} onChange={(e) => setTitle(e.target.value)} style={{ flex: '2', padding: '14px', borderRadius: '12px', border: '1px solid #ddd', boxSizing: 'border-box' }} />
@@ -158,10 +155,8 @@ export default function PerpustakaanPutriApp() {
             <button onClick={addBook} style={{ width: '100%', backgroundColor: '#800000', color: 'white', border: 'none', padding: '18px', borderRadius: '12px', fontWeight: 'bold', fontSize: '16px' }}>Simpan ke Koleksi Digital</button>
           </div>
 
-          {/* SEARCH BAR */}
           <input type="text" placeholder="🔍 Cari koleksi..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ width: '100%', padding: '16px 20px', borderRadius: '14px', border: '1px solid #f0e0e0', marginBottom: '40px', boxSizing: 'border-box' }} />
 
-          {/* GRID BUKU */}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(auto-fill, minmax(200px, 1fr))', gap: isMobile ? '20px' : '35px' }}>
             {filteredBooks.map(book => (
               <div key={book.id} onClick={() => { setSelectedBook(book); setIsEditing(false); }} style={{ cursor: 'pointer', padding: '14px', borderRadius: '24px', backgroundColor: 'white', border: '1px solid #f0e0e0', display: 'flex', flexDirection: 'column', height: '100%', marginBottom: '10px' }}>
@@ -171,10 +166,26 @@ export default function PerpustakaanPutriApp() {
                 <div style={{ minHeight: '42px' }}>
                   <h3 style={{ fontSize: isMobile ? '14px' : '16px', fontWeight: '700', color: '#4a0000', margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: '1.3' }}>{book.title}</h3>
                 </div>
-                <p style={{ fontSize: '12px', color: '#888', margin: '4px 0 10px' }}>{book.author}</p>
-                {/* RATING STAR DI HALAMAN DEPAN */}
-                <div style={{ marginTop: 'auto', color: '#ffd700', fontSize: '14px' }}>
+                <p style={{ fontSize: '12px', color: '#888', margin: '4px 0 6px' }}>{book.author}</p>
+                
+                {/* RATING */}
+                <div style={{ color: '#ffd700', fontSize: '13px', marginBottom: '4px' }}>
                   {'★'.repeat(book.rating || 0)}{'☆'.repeat(5 - (book.rating || 0))}
+                </div>
+
+                {/* STATUS BACA DI HALAMAN DEPAN */}
+                <div style={{ 
+                  fontSize: '11px', 
+                  fontWeight: '600', 
+                  color: book.status === 'Selesai Dibaca' ? '#2f9e44' : (book.status === 'Sedang Dibaca' ? '#1971c2' : '#868e96'),
+                  backgroundColor: book.status === 'Selesai Dibaca' ? '#ebfbee' : (book.status === 'Sedang Dibaca' ? '#e7f5ff' : '#f8f9fa'),
+                  padding: '4px 8px',
+                  borderRadius: '6px',
+                  display: 'inline-block',
+                  marginTop: 'auto',
+                  width: 'fit-content'
+                }}>
+                  {book.status === 'Selesai Dibaca' ? '✅ Selesai' : (book.status === 'Sedang Dibaca' ? '📖 Sedang Baca' : '⚪ Belum Baca')}
                 </div>
               </div>
             ))}
@@ -182,7 +193,6 @@ export default function PerpustakaanPutriApp() {
         </div>
       </div>
 
-      {/* MODAL DETAIL */}
       {selectedBook && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(74, 0, 0, 0.3)', backdropFilter: 'blur(10px)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '15px', zIndex: 10000 }}>
           <div style={{ backgroundColor: 'white', padding: isMobile ? '25px' : '40px', borderRadius: '35px', maxWidth: '800px', width: '100%', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '20px' : '40px', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
@@ -195,9 +205,9 @@ export default function PerpustakaanPutriApp() {
               <h2 style={{ color: '#4a0000', margin: 0 }}>{selectedBook.title}</h2>
               <p style={{ color: '#888', marginBottom: '20px' }}>{selectedBook.author}</p>
               <select value={selectedBook.status} onChange={(e) => updateBook(selectedBook.id, { status: e.target.value })} style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #eee' }}>
-                <option value="Belum Dibaca">⚪ Belum Dibaca</option>
-                <option value="Sedang Dibaca">📖 Sedang Dibaca</option>
-                <option value="Selesai Dibaca">✅ Selesai Dibaca</option>
+                <option value="Belum Dibaca">Belum Dibaca</option>
+                <option value="Sedang Dibaca">Sedang Dibaca</option>
+                <option value="Selesai Dibaca">Selesai Dibaca</option>
               </select>
               <div style={{ marginTop: '20px' }}>
                 {[1,2,3,4,5].map(s => <span key={s} onClick={() => updateBook(selectedBook.id, { rating: s })} style={{ fontSize: '35px', cursor: 'pointer', color: s <= (selectedBook.rating || 0) ? '#ffd700' : '#eee' }}>★</span>)}
