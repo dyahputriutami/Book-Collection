@@ -43,12 +43,11 @@ export default function PerpustakaanPutriApp() {
     setBooks(data || []);
   }
 
-  // FITUR BARU: Handle Upload File Manual
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => setCoverUrl(reader.result); // Mengubah file jadi string Base64
+      reader.onloadend = () => setCoverUrl(reader.result);
       reader.readAsDataURL(file);
     }
   };
@@ -102,14 +101,18 @@ export default function PerpustakaanPutriApp() {
       {showGreeting && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(74, 0, 0, 0.5)', backdropFilter: 'blur(10px)', color: 'white', zIndex: 9999, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '40px', opacity: fadeOut ? 0 : 1, transition: 'opacity 1s ease-in-out' }}>
           <h1 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem' }}>Selamat Datang di Perpustakaan Putri</h1>
-          <p style={{ fontStyle: 'italic', marginTop: '20px' }}>{quotes[quoteIndex].text}</p>
+          <p style={{ fontStyle: 'italic', marginTop: '20px', fontSize: isMobile ? '1rem' : '1.2rem' }}>{quotes[quoteIndex].text}</p>
+          <p style={{ fontWeight: 'bold', marginTop: '10px' }}>— {quotes[quoteIndex].author}</p>
         </div>
       )}
 
       <div style={{ paddingBottom: '80px' }}>
         <div style={{ padding: isMobile ? '40px 15px' : '60px 20px 30px', textAlign: 'center' }}>
           <h1 style={{ fontSize: isMobile ? '32px' : '45px', fontWeight: '800', color: '#4a0000', margin: 0 }}>Perpustakaan Putri</h1>
-          <p style={{ color: '#804040', fontSize: isMobile ? '14px' : '16px', marginTop: '15px' }}>{quotes[quoteIndex].text}</p>
+          <div style={{ minHeight: '60px', marginTop: '15px' }}>
+            <p style={{ color: '#804040', fontStyle: 'italic', fontSize: isMobile ? '14px' : '16px', margin: 0 }}>{quotes[quoteIndex].text}</p>
+            <p style={{ color: '#a06060', fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', marginTop: '5px' }}>— {quotes[quoteIndex].author}</p>
+          </div>
         </div>
 
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: isMobile ? '0 15px' : '0 20px' }}>
@@ -122,7 +125,6 @@ export default function PerpustakaanPutriApp() {
             
             <input placeholder="Nama Penulis" value={author} onChange={(e) => setAuthor(e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #ddd', marginBottom: '12px', boxSizing: 'border-box' }} />
             
-            {/* OPSI COVER: URL ATAU UPLOAD */}
             <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '10px', marginBottom: '15px', alignItems: 'center' }}>
               <input placeholder="URL Foto Cover..." value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} style={{ flex: '1', padding: '14px', borderRadius: '12px', border: '1px solid #ddd', width: '100%', boxSizing: 'border-box' }} />
               <span style={{ fontSize: '12px', color: '#999', fontWeight: 'bold' }}>ATAU</span>
@@ -137,7 +139,6 @@ export default function PerpustakaanPutriApp() {
 
           <input type="text" placeholder="🔍 Cari koleksi..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ width: '100%', padding: '16px 20px', borderRadius: '14px', border: '1px solid #f0e0e0', marginBottom: '40px', boxSizing: 'border-box' }} />
 
-          {/* GRID BUKU DENGAN MARGIN BAWAH EXTRA */}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(auto-fill, minmax(200px, 1fr))', gap: isMobile ? '20px' : '35px' }}>
             {filteredBooks.map(book => (
               <div key={book.id} onClick={() => { setSelectedBook(book); setIsEditing(false); }} style={{ cursor: 'pointer', padding: '14px', borderRadius: '24px', backgroundColor: 'white', border: '1px solid #f0e0e0', display: 'flex', flexDirection: 'column', height: '100%', marginBottom: '10px' }}>
@@ -155,7 +156,6 @@ export default function PerpustakaanPutriApp() {
         </div>
       </div>
 
-      {/* MODAL DETAIL */}
       {selectedBook && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(74, 0, 0, 0.3)', backdropFilter: 'blur(10px)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '15px', zIndex: 10000 }}>
           <div style={{ backgroundColor: 'white', padding: isMobile ? '25px' : '40px', borderRadius: '35px', maxWidth: '800px', width: '100%', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '20px' : '40px', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
