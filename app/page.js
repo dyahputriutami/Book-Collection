@@ -68,7 +68,7 @@ export default function BookTracker() {
 
   return (
     <div style={{ padding: '40px 20px', fontFamily: 'sans-serif', maxWidth: '850px', margin: '0 auto', backgroundColor: '#f4f7f6', minHeight: '100vh' }}>
-      <h1 style={{ textAlign: 'center', color: '#2c3e50', marginBottom: '30px' }}>📖 My Digital Library</h1>
+      <h1 style={{ textAlign: 'center', color: '#2c3e50', marginBottom: '30px' }}>📖 Perpustakaan Putri</h1>
       
       <form onSubmit={addBook} style={{ 
         backgroundColor: 'white', padding: '25px', borderRadius: '15px', 
