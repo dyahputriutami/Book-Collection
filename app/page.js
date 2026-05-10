@@ -28,12 +28,10 @@ export default function PerpustakaanPutriApp() {
 
   // Daftar Quote Inspiratif
   const quotes = [
-    "“Buku adalah jendela dunia di mana kita bisa melihat masa lalu dan merancang masa depan.”",
-    "“Membaca satu buku berarti memberi satu nyawa tambahan bagi imajinasi kita.”",
-    "“Perpustakaan adalah tempat di mana waktu berhenti, namun pengetahuan terus mengalir.”",
-    "“Ada lebih banyak harta karun di dalam buku daripada di semua jarahan bajak laut di Pulau Harta.” — Walt Disney",
-    "“Buku adalah teman yang paling setia dan guru yang paling sabar.”"
-  ];
+  { text: "“Buku adalah sihir portabel yang unik.”", author: "Stephen King" },
+  { text: "“Satu anak, satu guru, satu buku dan satu pena dapat mengubah dunia.”", author: "Malala Yousafzai" },
+  { text: "“Aku rela dipenjara asalkan bersama buku, karena dengan buku aku bebas.”", author: "Mohammad Hatta" }
+];
 
   useEffect(() => {
     // Pilih quote acak
@@ -142,10 +140,34 @@ export default function PerpustakaanPutriApp() {
       <div style={{ paddingBottom: '50px' }}>
         
         {/* Header */}
-        <div style={{ padding: '60px 20px 30px', textAlign: 'center' }}>
-          <h1 style={{ fontSize: '40px', fontWeight: '800', margin: '0', color: '#4a0000' }}>Perpustakaan Putri</h1>
-          <p style={{ color: '#804040', fontSize: '16px', marginTop: '10px' }}>Arsip pengetahuan dan jejak literasi digital.</p>
-        </div>
+<div style={{ padding: '60px 20px 30px', textAlign: 'center' }}>
+  <h1 style={{ fontSize: '40px', fontWeight: '800', margin: '0', color: '#4a0000' }}>
+    Perpustakaan Putri
+  </h1>
+  
+  {/* Container Quote Dinamis */}
+  <div style={{ minHeight: '60px', marginTop: '15px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+    <p style={{ 
+      color: '#804040', 
+      fontSize: '16px', 
+      margin: '0', 
+      fontStyle: 'italic',
+      transition: 'opacity 0.5s ease-in-out' 
+    }}>
+      {quotes[quoteIndex].text}
+    </p>
+    <p style={{ 
+      color: '#a06060', 
+      fontSize: '13px', 
+      fontWeight: '700', 
+      marginTop: '5px',
+      textTransform: 'uppercase',
+      letterSpacing: '1px'
+    }}>
+      — {quotes[quoteIndex].author}
+    </p>
+  </div>
+</div>
 
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px' }}>
           
