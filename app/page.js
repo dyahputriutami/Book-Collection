@@ -58,42 +58,39 @@ export default function PerpustakaanPutri() {
 
   const filteredBooks = books.filter(b => b.title.toLowerCase().includes(searchTerm.toLowerCase()) || b.author.toLowerCase().includes(searchTerm.toLowerCase()));
 
-  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'Inter, sans-serif', color: '#666' }}>Menyiapkan Perpustakaan Pribadi...</div>;
+  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'sans-serif', color: '#800000' }}>Menyiapkan Perpustakaan...</div>;
 
-  // --- TAMPILAN DETAIL (MODERN & CLEAN) ---
   if (selectedBook) {
     return (
-      <div style={{ minHeight: '100vh', backgroundColor: '#fdfdfd', padding: '40px 20px', fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+      <div style={{ minHeight: '100vh', backgroundColor: '#fff5f5', padding: '40px 20px', fontFamily: 'sans-serif' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-          <button onClick={() => setSelectedBook(null)} style={{ background: 'none', border: 'none', color: '#2d3436', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '16px', marginBottom: '30px', fontWeight: '600' }}>
-            <span>←</span> Kembali ke Galeri
+          <button onClick={() => setSelectedBook(null)} style={{ background: 'none', border: 'none', color: '#800000', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '16px', marginBottom: '30px', fontWeight: '600' }}>
+            <span>←</span> Kembali
           </button>
           
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '50px' }}>
-            <img src={selectedBook.cover} onError={(e) => e.target.src = 'https://via.placeholder.com/300x450'} style={{ width: '100%', maxWidth: '350px', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }} />
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '50px', backgroundColor: 'white', padding: '40px', borderRadius: '30px', boxShadow: '0 10px 30px rgba(128,0,0,0.05)' }}>
+            <img src={selectedBook.cover} onError={(e) => e.target.src = 'https://via.placeholder.com/300x450'} style={{ width: '100%', maxWidth: '320px', borderRadius: '20px', boxShadow: '0 15px 30px rgba(0,0,0,0.1)' }} />
             <div style={{ flex: '1', minWidth: '300px' }}>
-              <h1 style={{ fontSize: '42px', margin: '0 0 10px 0', color: '#2d3436', letterSpacing: '-1px' }}>{selectedBook.title}</h1>
-              <p style={{ fontSize: '20px', color: '#636e72', marginBottom: '30px' }}>{selectedBook.author}</p>
+              <h1 style={{ fontSize: '32px', margin: '0 0 10px 0', color: '#4a0000' }}>{selectedBook.title}</h1>
+              <p style={{ fontSize: '18px', color: '#666', marginBottom: '25px' }}>{selectedBook.author}</p>
               
-              <div style={{ display: 'flex', gap: '20px', marginBottom: '40px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', color: '#b2bec3', marginBottom: '10px' }}>Rating</label>
-                  <div style={{ display: 'flex', gap: '4px' }}>
-                    {[1,2,3,4,5].map(s => <span key={s} onClick={() => updateBook(selectedBook.id, { rating: s })} style={{ fontSize: '28px', cursor: 'pointer', color: s <= selectedBook.rating ? '#fdcb6e' : '#dfe6e9' }}>★</span>)}
-                  </div>
-                </div>
-                <div style={{ marginLeft: 'auto' }}>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', color: '#b2bec3', marginBottom: '10px' }}>Status</label>
-                  <button onClick={() => updateBook(selectedBook.id, { is_read: !selectedBook.is_read })} style={{ padding: '8px 20px', borderRadius: '100px', border: 'none', backgroundColor: selectedBook.is_read ? '#55efc4' : '#ffeaa7', color: '#2d3436', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>
-                    {selectedBook.is_read ? 'SELESAI' : 'DIBACA'}
-                  </button>
+              <div style={{ marginBottom: '30px' }}>
+                <button onClick={() => updateBook(selectedBook.id, { is_read: !selectedBook.is_read })} style={{ padding: '10px 25px', borderRadius: '100px', border: 'none', backgroundColor: selectedBook.is_read ? '#800000' : '#f0f0f0', color: selectedBook.is_read ? 'white' : '#666', fontWeight: '700', cursor: 'pointer' }}>
+                  {selectedBook.is_read ? '✓ SUDAH SELESAI' : '📖 SEDANG DIBACA'}
+                </button>
+              </div>
+
+              <div style={{ marginBottom: '30px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#800000', marginBottom: '10px' }}>RATING ANDA</label>
+                <div style={{ display: 'flex', gap: '5px' }}>
+                  {[1,2,3,4,5].map(s => <span key={s} onClick={() => updateBook(selectedBook.id, { rating: s })} style={{ fontSize: '32px', cursor: 'pointer', color: s <= selectedBook.rating ? '#ffd700' : '#eee' }}>★</span>)}
                 </div>
               </div>
 
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', color: '#b2bec3', marginBottom: '10px' }}>Catatan Pembelajaran</label>
-              <textarea value={selectedBook.notes || ''} onChange={(e) => updateBook(selectedBook.id, { notes: e.target.value })} placeholder="Apa insight menarik dari buku ini?" style={{ width: '100%', height: '200px', padding: '20px', borderRadius: '20px', border: '1px solid #eee', backgroundColor: '#f9f9f9', fontSize: '16px', lineHeight: '1.6', color: '#2d3436', outline: 'none' }} />
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#800000', marginBottom: '10px' }}>CATATAN REVIEW</label>
+              <textarea value={selectedBook.notes || ''} onChange={(e) => updateBook(selectedBook.id, { notes: e.target.value })} style={{ width: '100%', height: '180px', padding: '15px', borderRadius: '15px', border: '1px solid #eee', fontSize: '16px', outline: 'none' }} />
               
-              <button onClick={() => deleteBook(selectedBook.id)} style={{ marginTop: '40px', color: '#fab1a0', border: 'none', background: 'none', cursor: 'pointer', fontSize: '14px' }}>Hapus dari database pribadi</button>
+              <button onClick={() => deleteBook(selectedBook.id)} style={{ marginTop: '30px', color: '#ff7675', border: 'none', background: 'none', cursor: 'pointer', fontSize: '14px', textDecoration: 'underline' }}>Hapus buku ini</button>
             </div>
           </div>
         </div>
@@ -101,44 +98,51 @@ export default function PerpustakaanPutri() {
     );
   }
 
-  // --- TAMPILAN UTAMA (GALLERY STYLE) ---
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f8f9fa', fontFamily: '"Plus Jakarta Sans", sans-serif', color: '#2d3436' }}>
-      {/* Header Elegan */}
-      <div style={{ padding: '80px 20px 40px', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '48px', fontWeight: '800', margin: '0 0 10px 0', letterSpacing: '-2px' }}>Perpustakaan Putri</h1>
-        <p style={{ color: '#636e72', fontSize: '18px' }}>Arsip pengetahuan dan jejak literasi digital.</p>
+    <div style={{ minHeight: '100vh', backgroundColor: '#fffafa', fontFamily: 'sans-serif', color: '#2d3436' }}>
+      {/* Header */}
+      <div style={{ padding: '60px 20px 30px', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '40px', fontWeight: '800', margin: '0', color: '#4a0000' }}>Perpustakaan Putri</h1>
+        <p style={{ color: '#804040', fontSize: '16px', marginTop: '10px' }}>Arsip pengetahuan dan jejak literasi digital.</p>
       </div>
 
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 20px' }}>
-        {/* Form Tambah - Minimalist Card */}
-        <div style={{ backgroundColor: '#fff', padding: '30px', borderRadius: '30px', boxShadow: '0 10px 30px rgba(0,0,0,0.03)', marginBottom: '50px' }}>
-          <form onSubmit={addBook} style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
-            <input placeholder="Judul Buku" value={title} onChange={(e) => setTitle(e.target.value)} style={{ flex: '1', minWidth: '200px', padding: '15px 20px', borderRadius: '15px', border: '1px solid #f0f0f0', outline: 'none', fontSize: '15px' }} />
-            <input placeholder="Penulis" value={author} onChange={(e) => setAuthor(e.target.value)} style={{ flex: '1', minWidth: '200px', padding: '15px 20px', borderRadius: '15px', border: '1px solid #f0f0f0', outline: 'none', fontSize: '15px' }} />
-            <input placeholder="Link URL Cover" value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} style={{ flex: '2', minWidth: '300px', padding: '15px 20px', borderRadius: '15px', border: '1px solid #f0f0f0', outline: 'none', fontSize: '15px' }} />
-            <button type="submit" style={{ backgroundColor: '#2d3436', color: 'white', border: 'none', padding: '15px 30px', borderRadius: '15px', fontWeight: '700', cursor: 'pointer', transition: '0.2s' }}>Simpan</button>
+      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px' }}>
+        {/* Form Container */}
+        <div style={{ backgroundColor: 'white', padding: '25px', borderRadius: '24px', boxShadow: '0 10px 40px rgba(128,0,0,0.04)', marginBottom: '20px' }}>
+          <form onSubmit={addBook} style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+            <input placeholder="Judul Buku" value={title} onChange={(e) => setTitle(e.target.value)} style={{ flex: '1', padding: '12px 18px', borderRadius: '12px', border: '1px solid #f0e0e0', outline: 'none' }} />
+            <input placeholder="Penulis" value={author} onChange={(e) => setAuthor(e.target.value)} style={{ flex: '1', padding: '12px 18px', borderRadius: '12px', border: '1px solid #f0e0e0', outline: 'none' }} />
+            <input placeholder="Link URL Cover" value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} style={{ flex: '1.5', padding: '12px 18px', borderRadius: '12px', border: '1px solid #f0e0e0', outline: 'none' }} />
+            <button type="submit" style={{ backgroundColor: '#800000', color: 'white', border: 'none', padding: '12px 25px', borderRadius: '12px', fontWeight: '700', cursor: 'pointer' }}>Simpan</button>
           </form>
         </div>
 
-        {/* Search Bar - Round Minimalist */}
-        <div style={{ position: 'relative', marginBottom: '60px' }}>
-          <input type="text" placeholder="Cari buku..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ width: '100%', padding: '20px 30px', borderRadius: '100px', border: 'none', boxShadow: '0 5px 15px rgba(0,0,0,0.05)', fontSize: '16px', outline: 'none' }} />
+        {/* Search Bar - Sekarang Presisi dengan Lebar Form di Atas */}
+        <div style={{ marginBottom: '50px' }}>
+          <input type="text" placeholder="🔍 Cari koleksi..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ width: '100%', padding: '14px 20px', borderRadius: '14px', border: '1px solid #f0e0e0', fontSize: '15px', outline: 'none', boxSizing: 'border-box', backgroundColor: '#fff' }} />
         </div>
 
-        {/* Grid Buku - Aesthetic Gallery */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '40px', paddingBottom: '100px' }}>
+        {/* Gallery Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '30px', paddingBottom: '80px' }}>
           {filteredBooks.map(book => (
-            <div key={book.id} onClick={() => setSelectedBook(book)} style={{ cursor: 'pointer', transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }} onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-10px)'} onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
-              <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', boxShadow: '0 15px 35px rgba(0,0,0,0.1)', height: '320px', marginBottom: '20px' }}>
+            <div key={book.id} onClick={() => setSelectedBook(book)} style={{ cursor: 'pointer', transition: 'all 0.3s' }}>
+              <div style={{ overflow: 'hidden', borderRadius: '18px', boxShadow: '0 10px 20px rgba(0,0,0,0.08)', height: '260px', marginBottom: '15px' }}>
                 <img src={book.cover} onError={(e) => e.target.src = 'https://via.placeholder.com/200x300'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'linear-gradient(transparent, rgba(0,0,0,0.7))', padding: '20px', color: 'white' }}>
-                  <div style={{ fontSize: '11px', fontWeight: '800', marginBottom: '5px' }}>{book.is_read ? 'SELESAI' : 'SEDANG DIBACA'}</div>
-                  <div style={{ fontSize: '14px', color: '#fdcb6e' }}>{'★'.repeat(book.rating || 0)}</div>
-                </div>
               </div>
-              <h3 style={{ fontSize: '18px', margin: '0 0 5px 0', fontWeight: '700' }}>{book.title}</h3>
-              <p style={{ fontSize: '14px', color: '#636e72', margin: '0' }}>{book.author}</p>
+              
+              {/* Penataan Baru: Label & Stars di Bawah Judul */}
+              <h3 style={{ fontSize: '16px', margin: '0 0 4px 0', fontWeight: '700', color: '#4a0000' }}>{book.title}</h3>
+              <p style={{ fontSize: '13px', color: '#888', margin: '0 0 8px 0' }}>{book.author}</p>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                <span style={{ fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px', backgroundColor: book.is_read ? '#fff0f0' : '#f0f0f0', color: book.is_read ? '#800000' : '#888', border: `1px solid ${book.is_read ? '#ffdada' : '#eee'}` }}>
+                  {book.is_read ? 'SELESAI' : 'DIBACA'}
+                </span>
+              </div>
+              
+              <div style={{ fontSize: '14px', color: '#ffd700' }}>
+                {'★'.repeat(book.rating || 0)}{'☆'.repeat(5 - (book.rating || 0))}
+              </div>
             </div>
           ))}
         </div>
