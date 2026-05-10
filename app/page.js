@@ -10,7 +10,7 @@ export default function BookTracker() {
 
   // 1. MENGAMBIL DATA: Saat halaman pertama kali dibuka
   useEffect(() => {
-    const savedBooks = localStorage.getItem('my_digital_library');
+    const savedBooks = localStorage.getItem('Perpustakaan_Putri');
     if (savedBooks) {
       setBooks(JSON.parse(savedBooks));
     }
@@ -20,7 +20,7 @@ export default function BookTracker() {
   // 2. MENYIMPAN DATA: Setiap kali daftar 'books' berubah
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem('my_digital_library', JSON.stringify(books));
+      localStorage.setItem('Perpustakaan_Putri', JSON.stringify(books));
     }
   }, [books, isLoaded]);
 
