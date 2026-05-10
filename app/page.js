@@ -169,16 +169,92 @@ export default function PerpustakaanPutriApp() {
         </div>
       </div>
       
-      {/* Modal Detail sederhana */}
+      {/* Modal Detail Lengkap */}
       {selectedBook && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 10000 }}>
-          <div style={{ backgroundColor: 'white', padding: '30px', borderRadius: '20px', maxWidth: '500px', width: '90%' }}>
-            <button onClick={() => setSelectedBook(null)} style={{ float: 'right' }}>✕</button>
-            <h2>{selectedBook.title}</h2>
-            <button onClick={() => deleteBook(selectedBook.id)} style={{ color: 'red', marginTop: '20px' }}>Hapus Buku</button>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(74, 0, 0, 0.2)', backdropFilter: 'blur(8px)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', zIndex: 10000 }}>
+          <div style={{ backgroundColor: 'white', padding: '40px', borderRadius: '30px', maxWidth: '800px', width: '100%', display: 'flex', flexWrap: 'wrap', gap: '40px', position: 'relative', boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}>
+            
+            {/* Tombol Close */}
+            <button onClick={() => setSelectedBook(null)} style={{ position: 'absolute', top: '20px', right: '20px', border: 'none', background: '#f8f9fa', width: '35px', height: '35px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>✕</button>
+            
+            {/* Sisi Kiri: Gambar & Aksi Utama */}
+            <div style={{ textAlign: 'center', width: '220px' }}>
+              <img src={selectedBook.cover} onError={(e) => e.target.src = 'https://via.placeholder.com/200x300'} style={{ width: '100%', borderRadius: '15px', marginBottom: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <button onClick={() => setIsEditing(!isEditing)} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #800000', backgroundColor: isEditing ? '#800000' : 'transparent', color: isEditing ? 'white' : '#800000', fontWeight: '700', cursor: 'pointer', transition: '0.3s' }}>
+                  {isEditing ? 'Batal Edit' : '✎ Edit Data'}
+                </button>
+                <button onClick={() => deleteBook(selectedBook.id)} style={{ padding: '12px', border: 'none', backgroundColor: '#fff0f0', color: '#e03131', cursor: 'pointer', borderRadius: '12px', fontWeight: '700' }}>
+                  🗑 Hapus Koleksi
+                </button>
+              </div>
+            </div>
+
+            {/* Sisi Kanan: Detail & Editor */}
+            <div style={{ flex: '1', minWidth: '300px' }}>
+              {isEditing ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#888' }}>JUDUL BUKU</label>
+                  <input value={selectedBook.title} onChange={(e) => setSelectedBook({...selectedBook, title: e.target.value})} style={{ padding: '12px', borderRadius: '10px', border: '1px solid #eee', outline: 'none' }} />
+                  
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#888', marginTop: '10px' }}>PENULIS</label>
+                  <input value={selectedBook.author} onChange={(e) => setSelectedBook({...selectedBook, author: e.target.value})} style={{ padding: '12px', borderRadius: '10px', border: '1px solid #eee', outline: 'none' }} />
+                  
+                  <button onClick={() => updateBook(selectedBook.id, { title: selectedBook.title, author: selectedBook.author })} style={{ backgroundColor: '#4a90e2', color: 'white', border: 'none', padding: '14px', borderRadius: '10px', fontWeight: '700', marginTop: '10px', cursor: 'pointer' }}>
+                    Simpan Perubahan
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <h2 style={{ color: '#4a0000', fontSize: '28px', margin: '0 0 5px 0' }}>{selectedBook.title}</h2>
+                  <p style={{ fontSize: '18px', color: '#888', margin: '0 0 25px 0' }}>{selectedBook.author}</p>
+                </>
+              )}
+
+              <hr style={{ border: 'none', borderTop: '1px solid #f0f0f0', margin: '20px 0' }} />
+
+              {/* Status & Rating */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#888', marginBottom: '8px' }}>STATUS BACA</label>
+                  <select 
+                    value={selectedBook.status} 
+                    onChange={(e) => updateBook(selectedBook.id, { status: e.target.value })} 
+                    style={{ padding: '10px 15px', borderRadius: '10px', border: '1px solid #eee', width: '100%', cursor: 'pointer', outline: 'none', backgroundColor: '#fafafa' }}
+                  >
+                    <option value="Belum Dibaca">⚪ Belum Dibaca</option>
+                    <option value="Sedang Dibaca">📖 Sedang Dibaca</option>
+                    <option value="Selesai Dibaca">✅ Selesai Dibaca</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#888', marginBottom: '5px' }}>RATING PRIBADI</label>
+                  <div style={{ display: 'flex', gap: '5px' }}>
+                    {[1, 2, 3, 4, 5].map(s => (
+                      <span 
+                        key={s} 
+                        onClick={() => updateBook(selectedBook.id, { rating: s })} 
+                        style={{ fontSize: '30px', cursor: 'pointer', color: s <= (selectedBook.rating || 0) ? '#ffd700' : '#eee', transition: '0.2s' }}
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#888', marginBottom: '8px' }}>CATATAN / REVIEW</label>
+                  <textarea 
+                    value={selectedBook.notes || ''} 
+                    onChange={(e) => updateBook(selectedBook.id, { notes: e.target.value })} 
+                    onBlur={(e) => updateBook(selectedBook.id, { notes: e.target.value })}
+                    style={{ width: '100%', height: '100px', padding: '12px', borderRadius: '12px', border: '1px solid #eee', outline: 'none', resize: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} 
+                    placeholder="Apa kesan Anda tentang buku ini?" 
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
-    </div>
-  );
-}
