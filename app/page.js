@@ -38,7 +38,7 @@ export default function BookTracker() {
 
   return (
     <div style={{ padding: '40px 20px', fontFamily: 'sans-serif', maxWidth: '800px', margin: '0 auto', backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
-      <h1 style={{ textAlign: 'center', color: '#333' }}>📚 Koleksi Buku Dinamis</h1>
+      <h1 style={{ textAlign: 'center', color: '#333' }}>📚 Koleksi Buku Perpustakaan Putri</h1>
       
       <form onSubmit={addBook} style={{ 
         backgroundColor: 'white', padding: '20px', borderRadius: '10px', 
