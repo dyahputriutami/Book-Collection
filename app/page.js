@@ -31,23 +31,37 @@ export default function PerpustakaanPutriApp() {
       
       if (data.items && data.items.length > 0) {
         const info = data.items[0].volumeInfo;
+        
+        // Isi Penulis
         setAuthor(info.authors ? info.authors.join(', ') : 'Penulis Tidak Diketahui');
         
-        let image = info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail || '';
-        if (image) image = image.replace('http:', 'https:');
+        // Isi URL Foto (Mencari dari beberapa sumber kualitas gambar)
+        let image = "";
+        if (info.imageLinks) {
+          image = info.imageLinks.thumbnail || info.imageLinks.smallThumbnail || "";
+        }
+        
+        // Pastikan menggunakan HTTPS agar gambar muncul di aplikasi
+        if (image) {
+          image = image.replace('http:', 'https:');
+        }
+        
         setCoverUrl(image);
         
-        alert("Data ditemukan! Penulis dan Foto Cover telah terisi otomatis.");
+        if (image) {
+          alert("Data ditemukan! Penulis dan Foto Cover telah terisi.");
+        } else {
+          alert("Data ditemukan, tapi Google tidak menyediakan foto untuk buku ini.");
+        }
       } else {
-        alert("Buku tidak ditemukan di database Google.");
+        alert("Buku tidak ditemukan.");
       }
     } catch (err) {
-      console.error("Error API:", err);
+      console.error("API Error:", err);
     } finally {
       setSearchingAPI(false);
     }
   };
-
   // --- FUNGSI SUPABASE (MENGGUNAKAN TABEL: Perpustakaan Putri) ---
   async function fetchBooks() {
     try {
@@ -66,25 +80,26 @@ export default function PerpustakaanPutriApp() {
 
   const addBook = async (e) => {
     e.preventDefault();
-    if (!title || !author) return alert("Isi judul dan penulis!");
-    
+    if (!title || !author) return alert("Judul dan Penulis wajib diisi");
+
     const { error } = await supabase
       .from('Perpustakaan Putri')
       .insert([{ 
         title, 
         author, 
-        cover: coverUrl || 'https://via.placeholder.com/200x300', 
-        rating: 0, 
-        status: 'Belum Dibaca', 
-        notes: '' 
+        cover: coverUrl, // Pastikan state coverUrl sudah terisi dari API
+        status: 'Belum Dibaca', // Kolom ini yang tadi error
+        rating: 0,
+        notes: ''
       }]);
 
     if (error) {
+      console.error(error);
       alert("Gagal simpan: " + error.message);
     } else {
-      setTitle(''); setAuthor(''); setCoverUrl(''); 
+      alert("Berhasil disimpan!");
+      setTitle(''); setAuthor(''); setCoverUrl('');
       fetchBooks();
-      alert("Berhasil disimpan ke Perpustakaan Putri!");
     }
   };
 
