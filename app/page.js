@@ -1,3 +1,8 @@
+Tentu, ini adalah script lengkap untuk file app/page.js yang sudah menyertakan fitur Pencarian Real-time dan tetap menggunakan nama tabel Perpustakaan Putri sesuai dengan database Anda.
+
+Silakan salin seluruh kode di bawah ini dan timpa (replace) semua isi file di GitHub Anda:
+
+JavaScript
 'use client';
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
@@ -15,6 +20,9 @@ export default function BookTracker() {
   const [coverImage, setCoverImage] = useState(null);
   const [coverUrl, setCoverUrl] = useState('');
   const [loading, setLoading] = useState(true);
+  
+  // STATE BARU: Untuk menyimpan teks pencarian
+  const [searchTerm, setSearchTerm] = useState('');
 
   // AMBIL DATA DARI TABEL "Perpustakaan Putri"
   useEffect(() => {
@@ -24,9 +32,9 @@ export default function BookTracker() {
   async function fetchBooks() {
     try {
       const { data, error } = await supabase
-        .from('Perpustakaan Putri') // Nama tabel disesuaikan
+        .from('Perpustakaan Putri')
         .select('*')
-        .order('id', { ascending: false }); // Urutkan dari yang terbaru
+        .order('id', { ascending: false });
       
       if (error) throw error;
       if (data) setBooks(data);
@@ -36,6 +44,12 @@ export default function BookTracker() {
       setLoading(false);
     }
   }
+
+  // LOGIKA PENCARIAN: Menyaring buku berdasarkan Judul atau Penulis
+  const filteredBooks = books.filter((book) =>
+    book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    book.author.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -54,9 +68,8 @@ export default function BookTracker() {
       ? (coverImage || 'https://via.placeholder.com/150?text=No+Cover')
       : (coverUrl || `https://via.placeholder.com/150?text=${title}`);
 
-    // SIMPAN KE TABEL "Perpustakaan Putri"
     const { error } = await supabase
-      .from('Perpustakaan Putri') // Nama tabel disesuaikan
+      .from('Perpustakaan Putri')
       .insert([{ title, author, cover: finalCover }]);
 
     if (!error) {
@@ -64,7 +77,7 @@ export default function BookTracker() {
       setAuthor('');
       setCoverImage(null);
       setCoverUrl('');
-      fetchBooks(); // Refresh daftar buku
+      fetchBooks(); 
     } else {
       alert("Gagal menyimpan: " + error.message);
     }
@@ -73,7 +86,7 @@ export default function BookTracker() {
   const deleteBook = async (id) => {
     if (confirm('Hapus buku ini dari semua perangkat?')) {
       const { error } = await supabase
-        .from('Perpustakaan Putri') // Nama tabel disesuaikan
+        .from('Perpustakaan Putri')
         .delete()
         .eq('id', id);
       
@@ -81,12 +94,13 @@ export default function BookTracker() {
     }
   };
 
-  if (loading) return <div style={{textAlign: 'center', marginTop: '100px', fontFamily: 'sans-serif'}}>Menghubungkan ke Perpustakaan Putri...</div>;
+  if (loading) return <div style={{textAlign: 'center', marginTop: '100px', fontFamily: 'sans-serif'}}>Menghubungkan ke database...</div>;
 
   return (
     <div style={{ padding: '40px 20px', fontFamily: 'sans-serif', maxWidth: '850px', margin: '0 auto', backgroundColor: '#f4f7f6', minHeight: '100vh' }}>
       <h1 style={{ textAlign: 'center', color: '#2c3e50', marginBottom: '30px' }}>🌍 My Global Library</h1>
       
+      {/* FORM INPUT BUKU */}
       <form onSubmit={addBook} style={{ backgroundColor: 'white', padding: '25px', borderRadius: '15px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', marginBottom: '40px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
           <input placeholder="Judul Buku" value={title} onChange={(e) => setTitle(e.target.value)} style={{ padding: '12px', borderRadius: '8px', border: '1px solid #dee2e6' }} />
@@ -103,17 +117,39 @@ export default function BookTracker() {
             <input type="file" accept="image/*" onChange={handleImageUpload} />
           </div>
         ) : (
-          <input placeholder="Masukkan URL Gambar (Contoh: https://gambar.com/buku.jpg)" value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #dee2e6', marginBottom: '15px', boxSizing: 'border-box' }} />
+          <input placeholder="Masukkan URL Gambar" value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #dee2e6', marginBottom: '15px', boxSizing: 'border-box' }} />
         )}
 
         <button type="submit" style={{ width: '100%', padding: '15px', backgroundColor: '#2ecc71', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Simpan ke Cloud</button>
       </form>
 
+      {/* BAR PENCARIAN (BARU) */}
+      <div style={{ marginBottom: '30px' }}>
+        <input
+          type="text"
+          placeholder="🔍 Cari judul buku atau penulis..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{
+            width: '100%',
+            padding: '15px',
+            borderRadius: '12px',
+            border: '2px solid #0070f3',
+            fontSize: '16px',
+            boxSizing: 'border-box',
+            boxShadow: '0 4px 12px rgba(0,112,243,0.1)'
+          }}
+        />
+      </div>
+
+      {/* GRID TAMPILAN BUKU */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '25px' }}>
-        {books.length === 0 ? (
-          <p style={{ textAlign: 'center', gridColumn: '1/-1', color: '#7f8c8d' }}>Belum ada koleksi buku. Silakan tambahkan!</p>
+        {filteredBooks.length === 0 ? (
+          <p style={{ textAlign: 'center', gridColumn: '1/-1', color: '#7f8c8d' }}>
+            {searchTerm ? 'Buku tidak ditemukan...' : 'Belum ada koleksi buku.'}
+          </p>
         ) : (
-          books.map((book) => (
+          filteredBooks.map((book) => (
             <div key={book.id} style={{ backgroundColor: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 5px 15px rgba(0,0,0,0.08)', display: 'flex', flexDirection: 'column' }}>
               <img src={book.cover} alt={book.title} style={{ width: '100%', height: '260px', objectFit: 'cover' }} />
               <div style={{ padding: '15px', flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
