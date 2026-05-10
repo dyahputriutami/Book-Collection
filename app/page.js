@@ -130,7 +130,7 @@ export default function PerpustakaanPutriApp() {
 
       {/* --- MAIN APP --- */}
       <div style={{ paddingBottom: '50px' }}>
-        <div style={{ padding: isMobile ? '40px 20px' : '60px 20px 30px', textAlign: 'center' }}>
+        <div style={{ padding: isMobile ? '40px 15px' : '60px 20px 30px', textAlign: 'center' }}>
           <h1 style={{ fontSize: isMobile ? '32px' : '45px', fontWeight: '800', color: '#4a0000', margin: 0 }}>Perpustakaan Putri</h1>
           <div style={{ minHeight: '60px', marginTop: '15px' }}>
             <p style={{ color: '#804040', fontStyle: 'italic', fontSize: isMobile ? '14px' : '16px' }}>{quotes[quoteIndex].text}</p>
@@ -138,44 +138,48 @@ export default function PerpustakaanPutriApp() {
           </div>
         </div>
 
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto', padding: isMobile ? '0 15px' : '0 20px' }}>
           
-          {/* --- FORM INPUT (DIPERBAIKI UNTUK MOBILE) --- */}
-          <div style={{ backgroundColor: 'white', padding: isMobile ? '20px' : '25px', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.05)', marginBottom: '25px', border: '1px solid #f0e0e0' }}>
-            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '12px', marginBottom: '12px' }}>
-              <input placeholder="Ketik Judul Buku..." value={title} onChange={(e) => setTitle(e.target.value)} style={{ flex: '2', padding: '12px', borderRadius: '10px', border: '1px solid #ddd', outline: 'none' }} />
-              <button onClick={fetchFromGoogleBooks} disabled={searchingAPI} style={{ flex: '1', backgroundColor: '#4a90e2', color: 'white', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
+          {/* --- FORM INPUT (DIPERBAIKI AGAR FULL SCREEN & SIMETRIS) --- */}
+          <div style={{ backgroundColor: 'white', padding: isMobile ? '15px' : '25px', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.05)', marginBottom: '25px', border: '1px solid #f0e0e0' }}>
+            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '10px', marginBottom: '10px' }}>
+              <input placeholder="Ketik Judul Buku..." value={title} onChange={(e) => setTitle(e.target.value)} style={{ flex: '2', padding: '14px', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', width: '100%', boxSizing: 'border-box' }} />
+              <button onClick={fetchFromGoogleBooks} disabled={searchingAPI} style={{ flex: '1', backgroundColor: '#4a90e2', color: 'white', border: 'none', padding: '14px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', width: '100%' }}>
                 {searchingAPI ? 'Mencari...' : '🔍 Cari Data'}
               </button>
             </div>
             
-            {/* Kolom Penulis & Cover (Sekarang tampil di HP) */}
-            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '12px', marginBottom: '12px' }}>
-              <input placeholder="Nama Penulis" value={author} onChange={(e) => setAuthor(e.target.value)} style={{ flex: '1', padding: '12px', borderRadius: '10px', border: '1px solid #ddd' }} />
-              <input placeholder="URL Link Foto Cover" value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} style={{ flex: '1.5', padding: '12px', borderRadius: '10px', border: '1px solid #ddd' }} />
+            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '10px', marginBottom: '10px' }}>
+              <input placeholder="Nama Penulis" value={author} onChange={(e) => setAuthor(e.target.value)} style={{ flex: '1', padding: '14px', borderRadius: '12px', border: '1px solid #ddd', width: '100%', boxSizing: 'border-box' }} />
+              <input placeholder="URL Link Foto Cover" value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} style={{ flex: '1.5', padding: '14px', borderRadius: '12px', border: '1px solid #ddd', width: '100%', boxSizing: 'border-box' }} />
             </div>
 
-            <button onClick={addBook} style={{ width: '100%', backgroundColor: '#800000', color: 'white', border: 'none', padding: '14px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
+            <button onClick={addBook} style={{ width: '100%', backgroundColor: '#800000', color: 'white', border: 'none', padding: '16px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', fontSize: '16px' }}>
               Simpan ke Koleksi Digital
             </button>
           </div>
 
-          <input type="text" placeholder="🔍 Cari koleksi pribadi..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ width: '100%', padding: '14px 20px', borderRadius: '14px', border: '1px solid #f0e0e0', marginBottom: '30px', boxSizing: 'border-box' }} />
+          <input type="text" placeholder="🔍 Cari koleksi pribadi..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ width: '100%', padding: '16px 20px', borderRadius: '14px', border: '1px solid #f0e0e0', marginBottom: '30px', boxSizing: 'border-box' }} />
 
-          {/* GRID BUKU */}
+          {/* GRID BUKU (DIPERBAIKI AGAR SIMETRIS) */}
           <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(200px, 1fr))', 
+            gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(auto-fill, minmax(200px, 1fr))', 
             gap: isMobile ? '15px' : '30px' 
           }}>
             {filteredBooks.map(book => (
-              <div key={book.id} onClick={() => { setSelectedBook(book); setIsEditing(false); }} style={{ cursor: 'pointer', padding: '12px', borderRadius: '20px', backgroundColor: 'white', border: '1px solid #f0e0e0' }}>
-                <div style={{ overflow: 'hidden', borderRadius: '12px', height: isMobile ? '180px' : '260px', marginBottom: '10px' }}>
+              <div key={book.id} onClick={() => { setSelectedBook(book); setIsEditing(false); }} style={{ cursor: 'pointer', padding: '12px', borderRadius: '20px', backgroundColor: 'white', border: '1px solid #f0e0e0', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <div style={{ overflow: 'hidden', borderRadius: '12px', height: isMobile ? '180px' : '260px', marginBottom: '10px', backgroundColor: '#f9f9f9' }}>
                   <img src={book.cover} onError={(e) => e.target.src = 'https://via.placeholder.com/200x300'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
-                <h3 style={{ fontSize: isMobile ? '13px' : '15px', fontWeight: '700', color: '#4a0000', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{book.title}</h3>
-                <p style={{ fontSize: '11px', color: '#888', margin: '3px 0' }}>{book.author}</p>
-                <div style={{ color: '#ffd700', fontSize: '10px' }}>{'★'.repeat(book.rating || 0)}</div>
+                {/* Fixed Height untuk Judul agar Kartu Tetap Simetris */}
+                <div style={{ minHeight: '40px', marginBottom: '4px' }}>
+                    <h3 style={{ fontSize: isMobile ? '14px' : '15px', fontWeight: '700', color: '#4a0000', margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        {book.title}
+                    </h3>
+                </div>
+                <p style={{ fontSize: '11px', color: '#888', margin: '0 0 8px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{book.author}</p>
+                <div style={{ marginTop: 'auto', color: '#ffd700', fontSize: '10px' }}>{'★'.repeat(book.rating || 0)}</div>
               </div>
             ))}
           </div>
