@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// --- CONFIG SUPABASE ---
 const supabaseUrl = 'https://oabrworkjhiwyqjbjnrj.supabase.co';
 const supabaseKey = 'sb_publishable_njmgfGUnskvboIHDOLOgdw_n25SOZAx';
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -18,7 +17,6 @@ export default function PerpustakaanPutriApp() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBook, setSelectedBook] = useState(null);
   
-  // State Input
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [isbn, setIsbn] = useState(''); 
@@ -28,10 +26,11 @@ export default function PerpustakaanPutriApp() {
   const [isLocked, setIsLocked] = useState(true);
   const correctPasscode = "1234"; 
 
+  // DATA KUTIPAN DENGAN PENULISNYA
   const quotes = [
-    { text: "“Buku adalah sihir portabel yang unik.”", author: "Stephen King" },
-    { text: "“Satu anak, satu guru, satu buku dan satu pena dapat mengubah dunia.”", author: "Malala Yousafzai" },
-    { text: "“Aku rela dipenjara asalkan bersama buku, karena dengan buku aku bebas.”", author: "Mohammad Hatta" }
+    { text: "“Buku adalah sihir portabel yang unik.”", writer: "STEPHEN KING" },
+    { text: "“Satu anak, satu guru, satu buku dan satu pena dapat mengubah dunia.”", writer: "MALALA YOUSAFZAI" },
+    { text: "“Aku rela dipenjara asalkan bersama buku, karena dengan buku aku bebas.”", writer: "MOHAMMAD HATTA" }
   ];
 
   useEffect(() => {
@@ -39,9 +38,23 @@ export default function PerpustakaanPutriApp() {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    const splashTimer = setTimeout(() => { setFadeOut(true); setTimeout(() => setShowGreeting(false), 1000); }, 4000);
-    const quoteTimer = setInterval(() => { setQuoteIndex((prev) => (prev + 1) % quotes.length); }, 3000);
-    return () => { clearTimeout(splashTimer); clearInterval(quoteTimer); window.removeEventListener('resize', checkMobile); };
+    
+    // Timer splash screen
+    const splashTimer = setTimeout(() => { 
+      setFadeOut(true); 
+      setTimeout(() => setShowGreeting(false), 1000); 
+    }, 4000);
+
+    // Timer ganti kutipan
+    const quoteTimer = setInterval(() => { 
+      setQuoteIndex((prev) => (prev + 1) % quotes.length); 
+    }, 5000);
+
+    return () => { 
+      clearTimeout(splashTimer); 
+      clearInterval(quoteTimer); 
+      window.removeEventListener('resize', checkMobile); 
+    };
   }, []);
 
   async function fetchBooks() {
@@ -64,43 +77,31 @@ export default function PerpustakaanPutriApp() {
     }
   };
 
-  // FUNGSI CARI COVER DENGAN LOGIKA BERTINGKAT
+  // FUNGSI CARI COVER TER-OPTIMASI
   const fetchCoverOnly = async () => {
     if (!title || !author) {
-      return alert("Untuk mencari cover, Judul dan Nama Penulis wajib diisi.");
+      return alert("Judul dan Penulis wajib diisi untuk mencari cover.");
     }
     
     setSearchingAPI(true);
     const cleanIsbn = isbn.replace(/[- ]/g, "");
     
-    // Tahap 1: Cari dengan kombinasi lengkap (Judul + Penulis)
-    let query = `intitle:${encodeURIComponent(title)}+inauthor:${encodeURIComponent(author)}`;
-    if (cleanIsbn) query += `+isbn:${cleanIsbn}`;
-
+    // Gunakan parameter q yang lebih umum agar peluang ketemu lebih besar
+    const searchQuery = `intitle:${title} inauthor:${author}${cleanIsbn ? ' isbn:' + cleanIsbn : ''}`;
+    
     try {
-      let res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=1`);
-      let data = await res.json();
+      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchQuery)}&maxResults=1`);
+      const data = await res.json();
       
-      // Tahap 2: Jika gagal, coba cari berdasarkan judul saja
-      if (!data.items?.[0]) {
-        res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(title)}&maxResults=1`);
-        data = await res.json();
-      }
-      
-      if (data.items?.[0]) {
+      if (data.items?.[0]?.volumeInfo?.imageLinks) {
         const info = data.items[0].volumeInfo;
-        let img = info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail || "";
-        
-        if (img) {
-          setCoverUrl(img.replace('http:', 'https:'));
-        } else {
-          alert("Buku ditemukan, tetapi Google tidak menyediakan gambar cover. Silakan gunakan fitur Upload File atau tempel URL manual.");
-        }
+        let img = info.imageLinks.thumbnail || info.imageLinks.smallThumbnail;
+        setCoverUrl(img.replace('http:', 'https:'));
       } else {
-        alert("Cover tetap tidak ditemukan. Periksa kembali judul/penulis atau gunakan Google Images lalu tempel URL-nya.");
+        alert("Cover spesifik tidak ditemukan. Coba masukkan judul yang lebih singkat atau gunakan upload manual.");
       }
     } catch (err) {
-      alert("Terjadi kesalahan koneksi saat mencari cover.");
+      alert("Gagal menghubungi server pencarian.");
     } finally {
       setSearchingAPI(false);
     }
@@ -134,15 +135,6 @@ export default function PerpustakaanPutriApp() {
     }
   };
 
-  const getStatusStyle = (status) => {
-    switch(status) {
-      case 'Selesai Dibaca': return { color: '#2f9e44', bg: '#ebfbee', label: '✅ Selesai' };
-      case 'Sedang Dibaca': return { color: '#1971c2', bg: '#e7f5ff', label: '📖 Sedang Baca' };
-      case 'Wishlist': return { color: '#7048e8', bg: '#f3f0ff', label: '✨ Wishlist' };
-      default: return { color: '#868e96', bg: '#f8f9fa', label: '⚪ Belum Baca' };
-    }
-  };
-
   const filteredBooks = books.filter(b => b.title.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
@@ -157,13 +149,15 @@ export default function PerpustakaanPutriApp() {
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(74, 0, 0, 0.5)', backdropFilter: 'blur(10px)', color: 'white', zIndex: 9999, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '40px', opacity: fadeOut ? 0 : 1, transition: 'opacity 1s ease-in-out' }}>
           <h1 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem' }}>Selamat Datang di Perpustakaan Putri</h1>
           <p style={{ fontStyle: 'italic', marginTop: '20px' }}>{quotes[quoteIndex].text}</p>
+          <p style={{ fontSize: '14px', marginTop: '10px', letterSpacing: '2px' }}>— {quotes[quoteIndex].writer}</p>
         </div>
       )}
 
       <div style={{ paddingBottom: '80px' }}>
         <div style={{ padding: isMobile ? '40px 15px' : '60px 20px 30px', textAlign: 'center' }}>
           <h1 style={{ fontSize: isMobile ? '32px' : '45px', fontWeight: '800', color: '#4a0000', margin: 0 }}>Perpustakaan Putri</h1>
-          <p style={{ color: '#804040', fontStyle: 'italic', marginTop: '10px' }}>{quotes[quoteIndex].text}</p>
+          <p style={{ color: '#804040', fontStyle: 'italic', marginTop: '15px', marginBottom: '5px' }}>{quotes[quoteIndex].text}</p>
+          <p style={{ color: '#804040', fontSize: '12px', fontWeight: 'bold', letterSpacing: '1px' }}>— {quotes[quoteIndex].writer}</p>
         </div>
 
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: isMobile ? '0 15px' : '0 20px' }}>
@@ -203,32 +197,26 @@ export default function PerpustakaanPutriApp() {
             </div>
           )}
 
-          {/* GRID KOLEKSI */}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(auto-fill, minmax(200px, 1fr))', gap: isMobile ? '20px' : '35px' }}>
-            {filteredBooks.map(book => {
-              const s = getStatusStyle(book.status);
-              return (
+            {filteredBooks.map(book => (
                 <div key={book.id} onClick={() => setSelectedBook(book)} style={{ cursor: 'pointer', padding: '14px', borderRadius: '24px', backgroundColor: 'white', border: '1px solid #f0e0e0', display: 'flex', flexDirection: 'column', height: '100%' }}>
-                  <div style={{ overflow: 'hidden', borderRadius: '16px', height: isMobile ? '200px' : '280px', marginBottom: '12px', backgroundColor: '#f5f5f5', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '10px' }}>
+                  <div style={{ overflow: 'hidden', borderRadius: '16px', height: isMobile ? '200px' : '280px', marginBottom: '12px', backgroundColor: '#f5f5f5', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <img src={book.cover} onError={(e) => e.target.src = 'https://via.placeholder.com/200x300'} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
                   </div>
                   <h3 style={{ fontSize: isMobile ? '14px' : '16px', fontWeight: '700', color: '#4a0000', margin: '0 0 4px' }}>{book.title}</h3>
-                  <p style={{ fontSize: '12px', color: '#888', margin: '0 0 8px' }}>{book.author}</p>
-                  <div style={{ fontSize: '11px', fontWeight: '600', color: s.color, backgroundColor: s.bg, padding: '4px 8px', borderRadius: '6px', width: 'fit-content', marginTop: 'auto' }}>{s.label}</div>
+                  <p style={{ fontSize: '12px', color: '#888', margin: '0' }}>{book.author}</p>
                 </div>
-              );
-            })}
+            ))}
           </div>
         </div>
       </div>
 
-      {/* MODAL DETAIL */}
       {selectedBook && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(74, 0, 0, 0.3)', backdropFilter: 'blur(10px)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '15px', zIndex: 10000 }}>
           <div style={{ backgroundColor: 'white', padding: isMobile ? '25px' : '40px', borderRadius: '35px', maxWidth: '800px', width: '100%', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '20px' : '40px', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
             <button onClick={() => setSelectedBook(null)} style={{ position: 'absolute', top: '20px', right: '20px', border: 'none', background: '#f5f5f5', width: '35px', height: '35px', borderRadius: '50%', cursor: 'pointer' }}>✕</button>
             <div style={{ width: isMobile ? '100%' : '240px', textAlign: 'center' }}>
-              <img src={selectedBook.cover} style={{ width: '100%', borderRadius: '20px', marginBottom: '20px', objectFit: 'contain' }} />
+              <img src={selectedBook.cover} style={{ width: '100%', borderRadius: '20px', marginBottom: '20px' }} />
               {!isLocked && <button onClick={() => deleteBook(selectedBook.id)} style={{ width: '100%', padding: '12px', backgroundColor: '#fff0f0', color: '#e03131', borderRadius: '12px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>🗑 Hapus Buku</button>}
             </div>
             <div style={{ flex: 1 }}>
@@ -240,7 +228,7 @@ export default function PerpustakaanPutriApp() {
                 <option value="Selesai Dibaca">✅ Selesai Dibaca</option>
                 <option value="Wishlist">✨ Wishlist</option>
               </select>
-              <textarea disabled={isLocked} value={selectedBook.notes || ''} onChange={(e) => setSelectedBook({...selectedBook, notes: e.target.value})} onBlur={() => updateBook(selectedBook.id, { notes: selectedBook.notes })} style={{ width: '100%', height: '120px', marginTop: '20px', padding: '15px', borderRadius: '15px', border: '1px solid #eee' }} placeholder="Tulis catatan atau review singkat Anda di sini..." />
+              <textarea disabled={isLocked} value={selectedBook.notes || ''} onChange={(e) => setSelectedBook({...selectedBook, notes: e.target.value})} onBlur={() => updateBook(selectedBook.id, { notes: selectedBook.notes })} style={{ width: '100%', height: '120px', marginTop: '20px', padding: '15px', borderRadius: '15px', border: '1px solid #eee' }} placeholder="Review singkat Anda..." />
             </div>
           </div>
         </div>
