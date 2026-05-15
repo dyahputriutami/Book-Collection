@@ -160,7 +160,7 @@ export default function PerpustakaanPutriApp() {
 
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: isMobile ? '0 15px' : '0 20px' }}>
           
-          {/* SEARCH BAR (SELALU MUNCUL) */}
+          {/* SEARCH BAR */}
           <input type="text" placeholder="🔍 Cari koleksi..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ width: '100%', padding: '16px 20px', borderRadius: '14px', border: '1px solid #f0e0e0', marginBottom: isLocked ? '40px' : '20px', boxSizing: 'border-box', fontSize: '16px', outline: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }} />
 
           {/* FORM INPUT HANYA MUNCUL JIKA SUDAH UNLOCKED */}
@@ -168,7 +168,11 @@ export default function PerpustakaanPutriApp() {
             <div style={{ backgroundColor: 'white', padding: isMobile ? '20px' : '30px', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.05)', marginBottom: '35px', border: '1px solid #f0e0e0', animation: 'fadeIn 0.5s ease' }}>
               <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '12px', marginBottom: '12px' }}>
                 <input placeholder="Judul Buku..." value={title} onChange={(e) => setTitle(e.target.value)} style={{ flex: '2', padding: '14px', borderRadius: '12px', border: '1px solid #ddd', boxSizing: 'border-box' }} />
-                <button onClick={fetchFromGoogleBooks} style={{ flex: '1', backgroundColor: '#4a90e2', color: 'white', border: 'none', padding: '14px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>{searchingAPI ? 'Mencari...' : '🔍 Cari Data'}</button>
+                
+                {/* TOMBOL CARI DATA (WARNA DIUBAH MENJADI MAROON) */}
+                <button onClick={fetchFromGoogleBooks} style={{ flex: '1', backgroundColor: '#800000', color: 'white', border: 'none', padding: '14px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}>
+                  {searchingAPI ? 'Mencari...' : '🔍 Cari Data'}
+                </button>
               </div>
               
               <input placeholder="Nama Penulis" value={author} onChange={(e) => setAuthor(e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #ddd', marginBottom: '12px', boxSizing: 'border-box' }} />
